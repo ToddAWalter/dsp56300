@@ -27,12 +27,6 @@
 #include "jit.h"
 
 #if 0
-#	define LOGJITPC(PC)		LOG(HEX(reinterpret_cast<uint64_t>(this)) << " exec @ " << HEX(PC))
-#else
-#	define LOGJITPC(PC)		{}
-#endif
-
-#if 0
 #	define LOGSC(F)	logSC(F)
 #else
 #	define LOGSC(F)	{}
@@ -43,7 +37,6 @@
 namespace dsp56k
 {
 	constexpr bool g_traceSupported = false;
-	constexpr bool g_useJIT = g_jitSupported;
 
 	Jumptable g_jumptable;
 
@@ -159,69 +152,6 @@ namespace dsp56k
 		m_instructions = 0;
 		m_cycles = 0;
 		m_jit.resetHW();
-	}
-
-	// _____________________________________________________________________________
-	// exec
-	//
-	void DSP::exec()
-	{
-		if(g_useJIT)
-		{
-#if 0
-			if(m_processingMode == Default)
-			{
-				if(m_pendingInterrupts.empty())
-					execNoPendingInterrupts();
-				else
-					execInterrupts();
-			}
-			else if(m_processingMode == DefaultPreventInterrupt)
-			{
-				m_processingMode = Default;
-			}
-#else
-			m_interruptFunc(this);
-#endif
-
-#if DSP56300_DEBUGGER
-			if(m_debugger)
-				m_debugger->onExec(getPC().var);
-#endif
-			const auto pc = getPC().toWord();
-			LOGJITPC(pc);
-			m_jitEntries[pc](&m_jit, pc);
-//			m_jit.exec(pc);
-		}
-		else
-		{
-#if 0
-			if (m_processingMode == Default)
-			{
-				if (m_pendingInterrupts.empty())
-					execNoPendingInterrupts();
-				else
-					execInterrupts();
-			}
-			else if (m_processingMode == DefaultPreventInterrupt)
-			{
-				m_processingMode = Default;
-			}
-#else
-			m_interruptFunc(this);
-#endif
-
-#if DSP56300_DEBUGGER
-			if(m_debugger)
-				m_debugger->onExec(getPC().var);
-#endif
-
-			pcCurrentInstruction = reg.pc.toWord();
-
-			const auto op = fetchPC();
-
-			execOp(op);
-		}
 	}
 
 	void DSP::execInterrupts()

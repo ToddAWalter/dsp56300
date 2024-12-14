@@ -1,6 +1,7 @@
 #pragma once
 
 #include "disasm.h"
+#include "dspconfig.h"
 #include "registers.h"
 #include "memory.h"
 #include "utils.h"
@@ -8,6 +9,12 @@
 #include "opcodes.h"
 #include "jit.h"
 #include "jittypes.h"
+
+#if 0
+#	define LOGJITPC(PC)		LOG(HEX(reinterpret_cast<uint64_t>(this)) << " exec @ " << HEX(PC))
+#else
+#	define LOGJITPC(PC)		{}
+#endif
 
 namespace dsp56k
 {
@@ -24,6 +31,8 @@ namespace dsp56k
 	using TInstructionFunc = void (DSP::*)(TWord _op);
 	
 	template<typename Ta, typename Tb> void dspExecPeripherals(DSP* _dsp);
+
+	static constexpr bool g_useJIT = g_jitSupported;
 
 	class DSP final
 	{
@@ -207,7 +216,65 @@ namespace dsp56k
 
 		TReg24	getPC							() const									{ return reg.pc; }
 
-		void 	exec							();
+		void exec()
+		{
+			if(g_useJIT)
+			{
+#if 0
+				if(m_processingMode == Default)
+				{
+					if(m_pendingInterrupts.empty())
+						execNoPendingInterrupts();
+					else
+						execInterrupts();
+				}
+				else if(m_processingMode == DefaultPreventInterrupt)
+				{
+					m_processingMode = Default;
+				}
+#else
+				m_interruptFunc(this);
+#endif
+
+#if DSP56300_DEBUGGER
+				if(m_debugger)
+					m_debugger->onExec(getPC().var);
+#endif
+				const auto pc = getPC().toWord();
+				LOGJITPC(pc);
+				m_jitEntries[pc](&m_jit, pc);
+//				m_jit.exec(pc);
+			}
+			else
+			{
+#if 0
+				if (m_processingMode == Default)
+				{
+					if (m_pendingInterrupts.empty())
+						execNoPendingInterrupts();
+					else
+						execInterrupts();
+				}
+				else if (m_processingMode == DefaultPreventInterrupt)
+				{
+					m_processingMode = Default;
+				}
+#else
+				m_interruptFunc(this);
+#endif
+
+#if DSP56300_DEBUGGER
+				if(m_debugger)
+					m_debugger->onExec(getPC().var);
+#endif
+
+				pcCurrentInstruction = reg.pc.toWord();
+
+				const auto op = fetchPC();
+
+				execOp(op);
+			}			
+		}
 
 		template<typename Ta, typename Tb> void execPeriph() noexcept
 		{
