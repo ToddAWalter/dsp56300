@@ -9,6 +9,7 @@ agu.cpp agu.h
 audio.cpp audio.h
 bitfield.h
 buildconfig.h
+conditionvariable.cpp conditionvariable.h
 debuggerinterface.cpp debuggerinterface.h
 disasm.cpp disasm.h
 dma.cpp dma.h
@@ -51,9 +52,11 @@ semaphore.h
 staticArray.h
 threadtools.cpp threadtools.h
 timers.cpp timers.h
+trigger.cpp trigger.h
 types.cpp types.h
 unittests.cpp unittests.h
 utils.cpp utils.h
+win8sync.cpp win8sync.h
 )
 
 set(SOURCES_JIT
