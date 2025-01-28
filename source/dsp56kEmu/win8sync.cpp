@@ -1,4 +1,4 @@
-#include "Win8Sync.h"
+#include "win8sync.h"
 
 #ifdef _WIN32
 
