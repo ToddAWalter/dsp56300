@@ -47,7 +47,6 @@ namespace dsp56k
 
 	bool Win8Sync::isSupported()
 	{
-		return false;
 		loadWaitOnAddressFunctions();
 		return m_funcWait != nullptr;
 	}
