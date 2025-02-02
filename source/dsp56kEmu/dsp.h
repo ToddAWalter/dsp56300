@@ -30,7 +30,7 @@ namespace dsp56k
 	
 	using TInstructionFunc = void (DSP::*)(TWord _op);
 	
-	template<typename Ta, typename Tb> void dspExecPeripherals(DSP* _dsp);
+	template<typename Ta, typename Tb> void dspExecPeripherals(DSP* _dsp) noexcept;
 
 	static constexpr bool g_useJIT = g_jitSupported;
 
@@ -119,7 +119,7 @@ namespace dsp56k
 			StackIndent	= 0x04,
 		};
 
-		typedef void (*TInterruptFunc)(DSP*);
+		typedef void (*TInterruptFunc)(DSP*) noexcept;
 
 		static constexpr uint32_t PeripheralsProcessingStepSize = 32;
 
@@ -216,7 +216,7 @@ namespace dsp56k
 
 		TReg24	getPC							() const									{ return reg.pc; }
 
-		void exec()
+		ASMJIT_FORCE_INLINE void exec() noexcept
 		{
 			if(g_useJIT)
 			{

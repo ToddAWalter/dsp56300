@@ -40,30 +40,30 @@ namespace dsp56k
 
 	Jumptable g_jumptable;
 
-	void dspExecDefaultPreventInterrupt(DSP* _dsp)
+	void dspExecDefaultPreventInterrupt(DSP* _dsp) noexcept
 	{
 		_dsp->execDefaultPreventInterrupt();
 	}
-	void dspExecNop(DSP*)
+	void dspExecNop(DSP*) noexcept
 	{
 	}
-	void dspExecInterrupts(DSP* _dsp)
+	void dspExecInterrupts(DSP* _dsp) noexcept
 	{
 		_dsp->execInterrupts();
 	}
-	template <typename Ta, typename Tb> void dspExecPeripherals(DSP* _dsp)
+	template <typename Ta, typename Tb> void dspExecPeripherals(DSP* _dsp) noexcept
 	{
 		_dsp->execPeriph<Ta, Tb>();
 	}
 
-	template <typename Ta, typename Tb> DSP::TInterruptFunc findExecPeripheralsFuncT(IPeripherals* _pX, IPeripherals* _pY)
+	template <typename Ta, typename Tb> DSP::TInterruptFunc findExecPeripheralsFuncT(IPeripherals* _pX, IPeripherals* _pY) noexcept
 	{
 		if(dynamic_cast<Ta*>(_pX) && dynamic_cast<Tb*>(_pY))
 			return &dspExecPeripherals<Ta, Tb>;
 		return nullptr;
 	}
 
-	DSP::TInterruptFunc findExecPeripheralsFunc(IPeripherals* _pX, IPeripherals* _pY)
+	DSP::TInterruptFunc findExecPeripheralsFunc(IPeripherals* _pX, IPeripherals* _pY) noexcept
 	{
 		if(const auto func = findExecPeripheralsFuncT<Peripherals56362, PeripheralsNop>(_pX, _pY))		return func;
 		if(const auto func = findExecPeripheralsFuncT<Peripherals56362, Peripherals56367>(_pX, _pY))	return func;

@@ -5,7 +5,7 @@
 
 namespace dsp56k
 {
-	void dspExecDefaultPreventInterrupt(DSP* _dsp);
+	void dspExecDefaultPreventInterrupt(DSP* _dsp) noexcept;
 
 	inline void DSP::op_Bchg_ea(const TWord op)
 	{

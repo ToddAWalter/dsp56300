@@ -57,32 +57,32 @@ namespace dsp56k
 #endif
 	constexpr bool g_traceOps = false;
 
-	void funcCreate(Jit* _jit, const TWord _pc)
+	void funcCreate(Jit* _jit, const TWord _pc) noexcept
 	{
 		_jit->create(_pc, true);
 	}
 
-	void funcRecreate(Jit* _jit, const TWord _pc)
+	void funcRecreate(Jit* _jit, const TWord _pc) noexcept
 	{
 		_jit->recreate(_pc);
 	}
 
-	void funcRunCheckPMemWrite(Jit* _jit, const TWord _pc)
+	void funcRunCheckPMemWrite(Jit* _jit, const TWord _pc) noexcept
 	{
 		_jit->runCheckPMemWrite(_pc);
 	}
 
-	void funcRunCheckModeChange(Jit* _jit, const TWord _pc)
+	void funcRunCheckModeChange(Jit* _jit, const TWord _pc) noexcept
 	{
 		_jit->runCheckModeChange(_pc);
 	}
 
-	void funcRunCheckPMemWriteAndModeChange(Jit* _jit, const TWord _pc)
+	void funcRunCheckPMemWriteAndModeChange(Jit* _jit, const TWord _pc) noexcept
 	{
 		_jit->runCheckPMemWriteAndModeChange(_pc);
 	}
 
-	void funcRun(Jit* _jit, TWord _pc)
+	void funcRun(Jit* _jit, TWord _pc) noexcept
 	{
 		_jit->run(_pc);
 	}
