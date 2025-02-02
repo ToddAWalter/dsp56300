@@ -1,8 +1,10 @@
 #pragma once
 
 #include <mutex>
-#include <condition_variable>
 #include <atomic>
+
+#include "conditionvariable.h"
+#include "trigger.h"
 
 namespace dsp56k
 {
@@ -39,7 +41,7 @@ namespace dsp56k
 	private:
 		using Lock = std::unique_lock<std::mutex>;
 	    std::mutex m_mutex;
-	    std::condition_variable m_cv;
+	    ConditionVariable m_cv;
 	    uint32_t m_count;
 	};
 
@@ -65,7 +67,7 @@ namespace dsp56k
 		}
 	private:
 		std::atomic<int> m_count;
-		Semaphore m_sem;
+		Trigger m_sem;
 	};
 	
 	class NopSemaphore
