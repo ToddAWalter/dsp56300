@@ -110,9 +110,13 @@ namespace dsp56k
 		virtual void setSymbols(Disassembler& _disasm) const = 0;
 		virtual void terminate() = 0;
 
-		void setDelayCycles(const uint32_t _delayCycles);
+		void setDelayCycles(uint32_t _delayCycles);
 
-		void resetDelayCycles(const uint32_t _delayCycles);
+		void resetDelayCycles(const uint64_t _instructionCount, const uint32_t _delayCycles) noexcept
+		{
+			m_delayCycles = _delayCycles;
+			m_targetClock = _instructionCount + _delayCycles;
+		}
 
 		uint32_t getDelayCycles() const { return m_delayCycles; }
 		auto getTargetClock() const { return m_targetClock; }

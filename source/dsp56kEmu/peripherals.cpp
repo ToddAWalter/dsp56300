@@ -117,12 +117,6 @@ namespace dsp56k
 		m_targetClock = m_dsp->getInstructionCounter() + m_delayCycles;
 	}
 
-	void IPeripherals::resetDelayCycles(const uint32_t _delayCycles)
-	{
-		m_delayCycles = _delayCycles;
-		m_targetClock = m_dsp->getInstructionCounter() + m_delayCycles;
-	}
-
 	// _____________________________________________________________________________
 	// Peripherals
 	//

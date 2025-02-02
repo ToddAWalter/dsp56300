@@ -292,8 +292,8 @@ namespace dsp56k
 			const auto delayA = static_cast<Ta*>(perif[0])->exec();
 //			const auto delayB = static_cast<Tb*>(perif[1])->exec();
 
-			perif[0]->resetDelayCycles(delayA);
-//			perif[1]->resetDelayCycles(delayB);
+			perif[0]->resetDelayCycles(getInstructionCounter(), delayA);
+//			perif[1]->resetDelayCycles(getInstructionCounter(), delayB);
 
 			processExternalInterrupts();
 		}
