@@ -2,7 +2,7 @@
 
 namespace dsp56k
 {
-#if _WIN32
+#ifdef _WIN32
 	class Win8Sync
 	{
 	public:

@@ -42,7 +42,7 @@ namespace dsp56k
 		std::atomic_int m_flag{0};
 	};
 
-#if _WIN32
+#ifdef _WIN32
 	class Trigger
 	{
 	public:
