@@ -15,6 +15,14 @@ namespace dsp56k
 {
 	class Disassembler;
 
+	enum class PeripheralType
+	{
+		PeripheralsNop,
+		Peripherals56303,
+		Peripherals56362,
+		Peripherals56367
+	};
+
 	enum XIO
 	{
 		XIO_Reserved_High_First		= 0xffff80,							// 24 bit mode - SC bit clear
@@ -82,6 +90,9 @@ namespace dsp56k
 	public:
 		static constexpr uint32_t MaxDelayCycles = 16384;
 
+		explicit IPeripherals(const PeripheralType _t) : m_type(_t)
+		{
+		}
 		virtual ~IPeripherals() = default;
 
 		virtual void setDSP(DSP* _dsp)
@@ -106,15 +117,19 @@ namespace dsp56k
 		uint32_t getDelayCycles() const { return m_delayCycles; }
 		auto getTargetClock() const { return m_targetClock; }
 
+		auto getType() const { return m_type; }
+
 	private:
 		DSP* m_dsp = nullptr;
 		uint32_t m_delayCycles = 0;
 		uint64_t m_targetClock = 0;
+		PeripheralType m_type;
 	};
 
 	class PeripheralsNop final : public IPeripherals
 	{
 	public:
+		PeripheralsNop() : IPeripherals(PeripheralType::PeripheralsNop) {}
 		uint32_t exec() { return MaxDelayCycles; }
 
 	private:

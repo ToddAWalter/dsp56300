@@ -163,14 +163,16 @@ namespace dsp56k
 
 			if(isSupportedTransferMode)
 			{
-				if(auto* p303 = dynamic_cast<Peripherals56303*>(&m_peripherals))
+				if(m_peripherals.getType() == PeripheralType::Peripherals56303)
 				{
+					auto* p303 = static_cast<Peripherals56303*>(&m_peripherals);
 					m_dma.addTriggerTarget(this);
 					if(checkTrigger(*p303, reqSrc))
 						triggerByRequest();
 				}
-				else if(auto* p362 = dynamic_cast<Peripherals56362*>(&m_peripherals))
+				else if(m_peripherals.getType() == PeripheralType::Peripherals56362)
 				{
+					auto* p362 = static_cast<Peripherals56362*>(&m_peripherals);
 					m_dma.addTriggerTarget(this);
 					if(checkTrigger(*p362, reqSrc))
 						triggerByRequest();

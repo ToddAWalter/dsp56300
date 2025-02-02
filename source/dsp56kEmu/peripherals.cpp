@@ -127,7 +127,8 @@ namespace dsp56k
 	// Peripherals
 	//
 	Peripherals56303::Peripherals56303()
-		: m_mem(0x0)
+		: IPeripherals(PeripheralType::Peripherals56303)
+		, m_mem(0x0)
 		, m_dma(*this)
 		, m_essiClock(*this)
 		, m_essi0(*this, 0)
@@ -382,7 +383,8 @@ namespace dsp56k
 	}
 
 	Peripherals56362::Peripherals56362(Peripherals56367* _peripherals56367/* = nullptr*/)
-	: m_mem(0)
+	: IPeripherals(PeripheralType::Peripherals56362)
+	, m_mem(0)
 	, m_dma(*this)
 	, m_esaiClock(*this)
 	, m_esai(*this, MemArea_X, &m_dma)
@@ -742,7 +744,7 @@ namespace dsp56k
 		m_timers.setDSP(_dsp);
 	}
 
-	Peripherals56367::Peripherals56367() : m_mem(), m_esai(*this, MemArea_Y)
+	Peripherals56367::Peripherals56367() : IPeripherals(PeripheralType::Peripherals56367),	m_mem(), m_esai(*this, MemArea_Y)
 	{
 		m_mem.fill(0);
 	}
