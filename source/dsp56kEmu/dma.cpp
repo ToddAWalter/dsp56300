@@ -699,6 +699,8 @@ namespace dsp56k
 		  })
 		, m_dor{0,0,0,0}
 	{
+		for (auto& requestTarget : m_requestTargets)
+			requestTarget.reserve(m_channels.size());
 	}
 	/*
 	void Dma::setDSTR(const TWord _value)
@@ -777,15 +779,17 @@ namespace dsp56k
 
 		auto& channels = m_requestTargets[static_cast<uint32_t>(src)];
 
-		channels.insert(_channel);
+		channels.push_back(_channel);
 	}
 
-	void Dma::removeTriggerTarget(DmaChannel* _channel)
+	void Dma::removeTriggerTarget(const DmaChannel* _channel)
 	{
 		auto src = _channel->getRequestSource();
 
 		auto& channels = m_requestTargets[static_cast<uint32_t>(src)];
 
-		channels.erase(_channel);
+		auto it = std::find(channels.begin(), channels.end(), _channel);
+		if (it != channels.end())
+			channels.erase(it);
 	}
 }

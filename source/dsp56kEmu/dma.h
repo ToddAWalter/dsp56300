@@ -1,7 +1,7 @@
 #pragma once
 
 #include <array>
-#include <set>
+#include <vector>
 
 #include "types.h"
 
@@ -186,7 +186,7 @@ namespace dsp56k
 			DchMask = (1<<Dch0) | (1<<Dch1) | (1<<Dch2)
 		};
 
-		using ChannelList = std::set<DmaChannel*>;
+		using ChannelList = std::vector<DmaChannel*>;
 
 		Dma(IPeripherals& _peripherals);
 
@@ -213,7 +213,7 @@ namespace dsp56k
 		bool hasTrigger(DmaChannel::RequestSource _source) const;
 		bool trigger(DmaChannel::RequestSource _source) const;
 		void addTriggerTarget(DmaChannel* _channel);
-		void removeTriggerTarget(DmaChannel* _channel);
+		void removeTriggerTarget(const DmaChannel* _channel);
 
 	private:
 		TWord m_dstr;
