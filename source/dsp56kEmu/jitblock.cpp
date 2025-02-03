@@ -706,12 +706,15 @@ namespace dsp56k
 				m_asm.cmp(regPC, asmjit::Imm(childAddr));
 #endif
 
-				jumpToChild(child, JitCondCode::kZero);
-
-				if(nonBranchChild)
-					jumpToChild(nonBranchChild);
+				if (nonBranchChild)
+				{
+					jumpToOneOf(JitCondCode::kZero, child, nonBranchChild);
+				}
 				else
+				{
+					jumpToChild(child, JitCondCode::kZero);
 					m_asm.ret();
+				}
 			}
 			else
 			{
@@ -826,20 +829,26 @@ namespace dsp56k
 		m_block.setGenerating(false);
 	}
 
-	void JitBlock::jumpToChild(const JitBlockRuntimeData* _child, const JitCondCode _cc/* = JitCondCode::kMaxValue*/) const
+	JitReg64 JitBlock::getJumpTarget(const JitReg64& _dst, const JitBlockRuntimeData* _child) const
 	{
 		auto* p = asmjit::func_as_ptr(_child->getFunc());
 		const auto addr = reinterpret_cast<uint64_t>(p);
 
+		if(const auto offset = Jitmem::pointerOffset(p, &m_dsp.regs()))
+			m_asm.lea_(_dst, regDspPtr, offset);
+		else
+			m_asm.mov(_dst, asmjit::Imm(addr));
+
+		return _dst;
+	}
+
+	void JitBlock::jumpToChild(const JitBlockRuntimeData* _child, const JitCondCode _cc/* = JitCondCode::kMaxValue*/) const
+	{
 		const auto tempReg = r64(g_funcArgGPs[1]);
 
-		auto initTemp = [&]()
+		auto initTemp = [this, &tempReg, &_child]
 		{
-			if(const auto offset = Jitmem::pointerOffset(p, &m_dsp.regs()))
-				m_asm.lea_(tempReg, regDspPtr, offset);
-			else
-				m_asm.mov(tempReg, asmjit::Imm(addr));
-			return tempReg;
+			return getJumpTarget(tempReg, _child);
 		};
 
 		if(_cc == JitCondCode::kMaxValue)
@@ -865,5 +874,19 @@ namespace dsp56k
 #endif
 			m_asm.bind(l);
 		}
+	}
+
+	void JitBlock::jumpToOneOf(const JitCondCode _ccTrue, const JitBlockRuntimeData* _childTrue, const JitBlockRuntimeData* _childFalse) const
+	{
+		auto regTrue = getJumpTarget(r64(regDspPtr == r64(g_funcArgGPs[1]) ? r64(g_funcArgGPs[3]) : r64(g_funcArgGPs[1])), _childTrue);
+		auto regFalse = getJumpTarget(r64(regDspPtr == r64(g_funcArgGPs[2]) ? r64(g_funcArgGPs[3]) : r64(g_funcArgGPs[2])), _childFalse);
+
+#ifdef HAVE_ARM64
+		m_asm.csel(regFalse, regTrue, regFalse, _ccTrue);
+		m_asm.br(regFalse);
+#else
+		m_asm.cmov(_ccTrue, regFalse, regTrue);
+		m_asm.jmp(regFalse);
+#endif
 	}
 }

@@ -106,7 +106,10 @@ namespace dsp56k
 			JitBlockRuntimeData& m_block;
 		};
 
+		JitReg64 getJumpTarget(const JitReg64& _dst, const JitBlockRuntimeData* _child) const;
+
 		void jumpToChild(const JitBlockRuntimeData* _child, JitCondCode _cc = JitCondCode::kMaxValue) const;
+		void jumpToOneOf(JitCondCode _ccTrue, const JitBlockRuntimeData* _childTrue, const JitBlockRuntimeData* _childFalse) const;
 
 		JitRuntimeData& m_runtimeData;
 
