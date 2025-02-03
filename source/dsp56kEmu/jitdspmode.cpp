@@ -42,19 +42,30 @@ namespace dsp56k
 		return sr & (1<<_bit);
 	}
 
+	namespace
+	{
+		constexpr AddressingMode calcAddressingMode(const uint32_t _m24)
+		{
+			const uint16_t m16 = _m24 & 0xffff;
+
+			// Compute a 2-bit index directly, matching our enum values
+		    uint32_t index = ((static_cast<uint16_t>(m16 + 1) <= 1) << 1) | (m16 >> 15);
+
+		    const auto mode = static_cast<AddressingMode>(index);
+			return mode;
+		}
+
+		static_assert(calcAddressingMode(0x0000) == AddressingMode::Bitreverse);
+		static_assert(calcAddressingMode(0x0001) == AddressingMode::Modulo);
+		static_assert(calcAddressingMode(0x7fff) == AddressingMode::Modulo);
+		static_assert(calcAddressingMode(0x8000) == AddressingMode::MultiWrapModulo);
+		static_assert(calcAddressingMode(0x8001) == AddressingMode::MultiWrapModulo);
+		static_assert(calcAddressingMode(0xfffe) == AddressingMode::MultiWrapModulo);
+		static_assert(calcAddressingMode(0xffff) == AddressingMode::Linear);
+	}
+
 	AddressingMode JitDspMode::calcAddressingMode(const TReg24& _m)
 	{
-		const auto m = _m.toWord();
-
-		const auto m16 = m & 0xffff;
-
-		if(m16 == 0xffff)
-			return AddressingMode::Linear;
-
-		if(m16 >= 0x8000)
-			return AddressingMode::MultiWrapModulo;
-		if(!m16)
-			return AddressingMode::Bitreverse;
-		return AddressingMode::Modulo;
+		return dsp56k::calcAddressingMode(_m.toWord());
 	}
 }

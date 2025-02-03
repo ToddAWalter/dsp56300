@@ -188,10 +188,13 @@ namespace dsp56k
 
 	enum class AddressingMode
 	{
-		Unknown = -1,
-		Linear,
-		Modulo,
-		MultiWrapModulo,
-		Bitreverse
+		Unknown          = -1,
+
+		// magic values here for faster computation, see JitDspMode::calcAddressingMode()
+
+		Modulo           = 0b00, // m16 < 0x8000
+	    MultiWrapModulo  = 0b01, // m16 >= 0x8000
+	    Bitreverse       = 0b10, // m16 == 0
+	    Linear           = 0b11  // m16 == 0xffff
 	};
 }
