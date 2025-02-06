@@ -69,6 +69,41 @@ namespace dsp56k
 		std::atomic<int> m_count;
 		Trigger m_sem;
 	};
+
+	class SpscSemaphoreWithCount
+	{
+	public:
+		explicit SpscSemaphoreWithCount(const int _count = 0) : m_count(_count)
+		{
+		}
+
+		void notify(const uint32_t _count)
+		{
+			const auto prev = m_count.fetch_add(static_cast<int>(_count), std::memory_order_release);
+
+	        if (prev < 0)
+	        {
+				for (uint32_t i = 0; i < _count; ++i)
+					m_sem.notify();
+	        }
+		}
+
+		void wait(const uint32_t _count)
+		{
+			const int count = static_cast<int>(_count);
+
+			const int prev = m_count.fetch_sub(count, std::memory_order_acquire);
+
+			if (prev  < count)
+			{
+				for (int i = prev; i < count; ++i)
+					m_sem.wait();
+			}
+		}
+	private:
+		std::atomic<int> m_count;
+		Semaphore m_sem;
+	};
 	
 	class NopSemaphore
 	{
