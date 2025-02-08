@@ -5,7 +5,9 @@
 #include "logging.h"
 
 #ifndef _WIN32
+#ifndef ANDROID
 #define SUPPORT_BACKTRACE
+#endif
 #endif
 
 #ifdef SUPPORT_BACKTRACE
